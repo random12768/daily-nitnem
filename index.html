@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Nitnem</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Daily Nitnem">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1f6f5c">
+<style>
+  html,body{height:100%;margin:0}
+  body{background:#fdf6e3;display:flex;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  main{text-align:center;padding:24px}
+  button{width:70vmin;height:70vmin;max-width:360px;max-height:360px;border-radius:50%;border:0;background:#1f6f5c;color:#fdf6e3;box-shadow:0 10px 30px rgba(31,111,92,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;transition:transform .1s}
+  button:active{transform:scale(.96)}
+  button svg{width:45%;height:45%;fill:currentColor}
+  button.playing{background:#b5532c;box-shadow:0 10px 30px rgba(181,83,44,.35)}
+  #label{margin-top:28px;font-size:28px;color:#3b3b3b;font-weight:600}
+  #msg{margin-top:10px;font-size:18px;color:#8a3b1c;min-height:24px}
+</style>
+</head>
+<body>
+<main>
+  <button id="btn" aria-label="Play">
+    <svg id="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+  <div id="label">Tap to play</div>
+  <div id="msg"></div>
+</main>
+<audio id="a" src="audio.mp3" preload="auto" playsinline></audio>
+<script>
+  const a = document.getElementById("a"), btn = document.getElementById("btn"),
+        label = document.getElementById("label"), msg = document.getElementById("msg"),
+        icon = document.getElementById("icon");
+  const PLAY = '<path d="M8 5v14l11-7z"/>', STOP = '<path d="M6 6h12v12H6z"/>';
+  function setPlaying(p){
+    btn.classList.toggle("playing", p);
+    icon.innerHTML = p ? STOP : PLAY;
+    label.textContent = p ? "Playing… tap to start over" : "Tap to play";
+  }
+  btn.addEventListener("click", async () => {
+    msg.textContent = "";
+    try { a.currentTime = 0; } catch(e){}
+    try { await a.play(); setPlaying(true); }
+    catch(e){ msg.textContent = "Couldn't play. Please check your connection."; setPlaying(false); }
+  });
+  a.addEventListener("ended", () => setPlaying(false));
+  a.addEventListener("error", () => { msg.textContent = "Audio file not found."; setPlaying(false); });
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
