@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pa">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -10,47 +10,159 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Daily Nitnem">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#1f6f5c">
+<meta name="theme-color" content="#fdf6e3">
 <style>
-  html,body{height:100%;margin:0}
-  body{background:#fdf6e3;display:flex;align-items:center;justify-content:center;font-family:-apple-system,system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-  main{text-align:center;padding:24px}
-  button{width:70vmin;height:70vmin;max-width:360px;max-height:360px;border-radius:50%;border:0;background:#1f6f5c;color:#fdf6e3;box-shadow:0 10px 30px rgba(31,111,92,.35);cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto;transition:transform .1s}
-  button:active{transform:scale(.96)}
-  button svg{width:45%;height:45%;fill:currentColor}
-  button.playing{background:#b5532c;box-shadow:0 10px 30px rgba(181,83,44,.35)}
-  #label{margin-top:28px;font-size:28px;color:#3b3b3b;font-weight:600}
-  #msg{margin-top:10px;font-size:18px;color:#8a3b1c;min-height:24px}
+  :root{--cream:#fdf6e3;--navy:#14305f;--green:#1f6f5c;--saffron:#b5532c;--ink:#2b2b2b}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{background:var(--cream);color:var(--ink);font-family:-apple-system,system-ui,"Noto Sans Gurmukhi",sans-serif;
+       -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+       padding:env(safe-area-inset-top) 20px calc(env(safe-area-inset-bottom) + 24px)}
+  main{max-width:480px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:24px}
+  #khanda{height:88px;width:auto;opacity:.95}
+  h1{margin:12px 0 0;font-size:34px;color:var(--navy);font-weight:700}
+  .sub{font-size:18px;color:#5b5b5b;margin-top:2px}
+
+  #play{margin-top:28px;width:min(62vw,280px);height:min(62vw,280px);border-radius:50%;border:0;background:var(--green);color:var(--cream);
+        box-shadow:0 12px 30px rgba(31,111,92,.30);display:flex;align-items:center;justify-content:center;transition:transform .1s,background .2s}
+  #play:active{transform:scale(.96)}
+  #play.playing{background:var(--saffron);box-shadow:0 12px 30px rgba(181,83,44,.30)}
+  #play svg{width:46%;height:46%;fill:currentColor}
+  #state{margin-top:20px;font-size:34px;font-weight:700;color:var(--navy);line-height:1.15}
+  #state small{display:block;font-size:20px;font-weight:600;color:#5b5b5b;margin-top:2px}
+
+  .progress{width:100%;margin-top:26px}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;background:transparent;margin:0}
+  input[type=range]::-webkit-slider-runnable-track{height:14px;border-radius:7px;background:linear-gradient(to right,var(--green) var(--p,0%),#d9cfb8 var(--p,0%))}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:var(--navy);margin-top:-10px;border:3px solid var(--cream);box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  input[type=range]::-moz-range-track{height:14px;border-radius:7px;background:#d9cfb8}
+  input[type=range]::-moz-range-progress{height:14px;border-radius:7px;background:var(--green)}
+  input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--navy);border:3px solid var(--cream)}
+  .times{display:flex;justify-content:space-between;font-size:20px;font-variant-numeric:tabular-nums;margin-top:2px}
+  .times span small{display:block;font-size:14px;color:#6b6b6b}
+  .times .right{text-align:right}
+
+  .skips{display:flex;gap:14px;width:100%;margin-top:22px}
+  .skips button{flex:1;min-height:84px;border-radius:22px;border:3px solid var(--navy);background:#fff;color:var(--navy);
+        font-size:20px;font-weight:700;line-height:1.2;padding:10px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .skips button:active{background:#efe7d0}
+  .skips button .arr{font-size:30px;line-height:1}
+  .skips button small{font-size:15px;font-weight:600;color:#555}
+
+  label.awake{display:flex;align-items:center;gap:14px;margin-top:26px;font-size:20px;font-weight:600;text-align:left;padding:12px 6px;width:100%}
+  label.awake input{width:34px;height:34px;accent-color:var(--green);flex:none}
+  label.awake small{display:block;font-size:15px;font-weight:500;color:#6b6b6b}
+  #msg{margin-top:14px;min-height:26px;font-size:18px;color:#8a3b1c;font-weight:600}
 </style>
 </head>
 <body>
 <main>
-  <button id="btn" aria-label="Play">
+  <img id="khanda" src="khanda-top.png" alt="">
+  <h1>ਨਿਤਨੇਮ</h1>
+  <div class="sub">Daily Nitnem</div>
+
+  <button id="play" aria-label="Play / Pause">
     <svg id="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
   </button>
-  <div id="label">Tap to play</div>
+  <div id="state">ਚਲਾਓ<small>Play</small></div>
+
+  <div class="progress">
+    <input id="bar" type="range" min="0" max="1000" value="0" step="1" aria-label="Progress">
+    <div class="times">
+      <span><b id="elapsed">0:00</b><small>ਚੱਲਿਆ · Played</small></span>
+      <span class="right"><b id="left">–:––</b><small>ਬਾਕੀ ਸਮਾਂ · Time left</small></span>
+    </div>
+  </div>
+
+  <div class="skips">
+    <button id="back"><span class="arr"><svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M11 6v12l-8.5-6zM21 6v12l-8.5-6z"/></svg></span>30 ਸਕਿੰਟ ਪਿੱਛੇ<small>Back 30 sec</small></button>
+    <button id="fwd"><span class="arr"><svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M13 6v12l8.5-6zM3 6v12l8.5-6z"/></svg></span>30 ਸਕਿੰਟ ਅੱਗੇ<small>Forward 30 sec</small></button>
+  </div>
+
+  <label class="awake" id="awakeRow">
+    <input type="checkbox" id="awake" checked>
+    <span>ਸਕ੍ਰੀਨ ਚਾਲੂ ਰੱਖੋ<small>Keep screen on</small></span>
+  </label>
   <div id="msg"></div>
 </main>
 <audio id="a" src="audio.mp3" preload="auto" playsinline></audio>
+
 <script>
-  const a = document.getElementById("a"), btn = document.getElementById("btn"),
-        label = document.getElementById("label"), msg = document.getElementById("msg"),
-        icon = document.getElementById("icon");
-  const PLAY = '<path d="M8 5v14l11-7z"/>', STOP = '<path d="M6 6h12v12H6z"/>';
-  function setPlaying(p){
-    btn.classList.toggle("playing", p);
-    icon.innerHTML = p ? STOP : PLAY;
-    label.textContent = p ? "Playing… tap to start over" : "Tap to play";
+(function(){
+  var a=document.getElementById("a"), btn=document.getElementById("play"), icon=document.getElementById("icon"),
+      state=document.getElementById("state"), bar=document.getElementById("bar"),
+      elapsed=document.getElementById("elapsed"), left=document.getElementById("left"),
+      msg=document.getElementById("msg"), awake=document.getElementById("awake");
+  var PLAY='<path d="M8 5v14l11-7z"/>', PAUSE='<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+  var dragging=false, lock=null;
+
+  function fmt(s){ if(!isFinite(s)||s<0) return "–:––"; s=Math.floor(s); var h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60;
+    return (h? h+":"+(m<10?"0":"")+m : m)+":"+(x<10?"0":"")+x; }
+  function setState(pa,en,playing){
+    state.innerHTML=pa+"<small>"+en+"</small>";
+    btn.classList.toggle("playing",playing);
+    icon.innerHTML=playing?PAUSE:PLAY;
   }
-  btn.addEventListener("click", async () => {
-    msg.textContent = "";
-    try { a.currentTime = 0; } catch(e){}
-    try { await a.play(); setPlaying(true); }
-    catch(e){ msg.textContent = "Couldn't play. Please check your connection."; setPlaying(false); }
+  function refresh(){
+    var d=a.duration, t=a.currentTime;
+    elapsed.textContent=fmt(t);
+    left.textContent=isFinite(d)?fmt(d-t):"–:––";
+    if(!dragging && isFinite(d) && d>0){ var v=t/d*1000; bar.value=v; bar.style.setProperty("--p",(v/10)+"%"); }
+  }
+
+  // Wake lock (keep screen on)
+  async function acquire(){
+    if(!awake.checked||a.paused||!("wakeLock" in navigator)||lock) return;
+    try{ lock=await navigator.wakeLock.request("screen"); lock.addEventListener("release",function(){lock=null;}); }catch(e){}
+  }
+  function release(){ if(lock){ try{lock.release();}catch(e){} lock=null; } }
+  if(!("wakeLock" in navigator)) document.getElementById("awakeRow").style.display="none";
+  try{ var saved=localStorage.getItem("keepAwake"); if(saved!==null) awake.checked=(saved==="1"); }catch(e){}
+  awake.addEventListener("change",function(){
+    try{localStorage.setItem("keepAwake",awake.checked?"1":"0");}catch(e){}
+    if(awake.checked) acquire(); else release();
   });
-  a.addEventListener("ended", () => setPlaying(false));
-  a.addEventListener("error", () => { msg.textContent = "Audio file not found."; setPlaying(false); });
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+  document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="visible") acquire(); });
+
+  // Main button: play / pause
+  btn.addEventListener("click",function(){
+    msg.textContent="";
+    if(a.paused){ a.play().catch(function(){ msg.textContent="ਆਡੀਓ ਨਹੀਂ ਚੱਲੀ। ਇੰਟਰਨੈੱਟ ਚੈੱਕ ਕਰੋ। · Couldn't play. Please check internet."; }); }
+    else a.pause();
+  });
+  function skip(n){ var d=a.duration; if(!isFinite(d)) return; a.currentTime=Math.max(0,Math.min(d-1,a.currentTime+n)); refresh(); }
+  document.getElementById("back").addEventListener("click",function(){skip(-30);});
+  document.getElementById("fwd").addEventListener("click",function(){skip(30);});
+
+  // Seek bar
+  bar.addEventListener("input",function(){ dragging=true; var d=a.duration; if(isFinite(d)){ a.currentTime=bar.value/1000*d; } bar.style.setProperty("--p",(bar.value/10)+"%"); refresh(); });
+  bar.addEventListener("change",function(){ dragging=false; });
+  ["touchend","mouseup","pointerup"].forEach(function(ev){ bar.addEventListener(ev,function(){ dragging=false; }); });
+
+  a.addEventListener("play",function(){ setState("ਰੋਕੋ","Pause",true); acquire(); });
+  a.addEventListener("pause",function(){ if(!a.ended){ setState("ਚਲਾਓ","Play",false); } release(); });
+  a.addEventListener("playing",function(){ setState("ਰੋਕੋ","Pause",true); });
+  a.addEventListener("waiting",function(){ if(!a.paused) setState("ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…","Loading…",true); });
+  a.addEventListener("ended",function(){ a.currentTime=0; setState("ਚਲਾਓ","Play",false); release(); refresh(); });
+  a.addEventListener("timeupdate",refresh);
+  a.addEventListener("loadedmetadata",refresh);
+  a.addEventListener("durationchange",refresh);
+  a.addEventListener("error",function(){ msg.textContent="ਆਡੀਓ ਫਾਈਲ ਨਹੀਂ ਮਿਲੀ। · Audio file not found."; setState("ਚਲਾਓ","Play",false); });
+
+  // Lock-screen / Control Center controls
+  if("mediaSession" in navigator){
+    try{
+      navigator.mediaSession.metadata=new MediaMetadata({title:"ਨਿਤਨੇਮ",artist:"Daily Nitnem",artwork:[{src:"icon-512.png",sizes:"512x512",type:"image/png"}]});
+      navigator.mediaSession.setActionHandler("play",function(){a.play();});
+      navigator.mediaSession.setActionHandler("pause",function(){a.pause();});
+      navigator.mediaSession.setActionHandler("seekbackward",function(){skip(-30);});
+      navigator.mediaSession.setActionHandler("seekforward",function(){skip(30);});
+    }catch(e){}
+  }
+
+  if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js"); }
+  refresh();
+})();
 </script>
 </body>
 </html>
